@@ -1,0 +1,261 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="{% static 'main/admin_panel.css' %}">
+    <title>Panel Admin</title>
+</head>
+<body>
+    <h1>⚙️ Panel del Administrador</h1>
+
+    <!-- Pestañas -->
+    <div class="tabs">
+        <div class="tab active" data-tab="crear-feria">Crear Feria</div>
+        <div class="tab" data-tab="crear-artesano">Registrar Artesano</div>
+        <div class="tab" data-tab="ferias-registradas">Ferias Registradas</div>
+        <div class="tab" data-tab="artesanos-registrados">Artesanos Registrados</div>
+    </div>
+
+    <!-- Contenido de pestañas -->
+    <div id="crear-feria" class="tab-content active">
+        <h2>Crear Feria</h2>
+        <form method="post">
+            {% csrf_token %}
+            <input type="hidden" name="crear_feria" value="1">
+
+            <!-- Renderizar FeriaForm -->
+            <div class="form-group">
+                {{ feria_form.nombre.label_tag }}
+                {{ feria_form.nombre }}
+            </div>
+            <div class="form-group">
+                {{ feria_form.fecha_inicio.label_tag }}
+                {{ feria_form.fecha_inicio }}
+            </div>
+            <div class="form-group">
+                {{ feria_form.fecha_fin.label_tag }}
+                {{ feria_form.fecha_fin }}
+            </div>
+            <div class="form-group">
+                {{ feria_form.preferencias.label_tag }}
+                {{ feria_form.preferencias }}
+            </div>
+
+            <!-- Renderizar los Tipos de Productos -->
+            <h3>Tipos de productos</h3>
+            {{ tipo_formset.management_form }}
+            <div id="tipos-container">
+                {% for form in tipo_formset %}
+                    <div class="form-group">
+                        {{ form.tipo.label_tag }} {{ form.tipo }}
+                        {{ form.cupos.label_tag }} {{ form.cupos }}
+                    </div>
+                {% endfor %}
+            </div>
+
+            <button type="submit" onclick="agregarTipo()" style="width: 103%;">+ Agregar tipo</button><br><br/>
+            <button type="submit" style="width: 103%;">✅ Crear Feria</button>
+        </form>
+    </div>
+
+
+    <div id="crear-artesano" class="tab-content">
+        <h2>Registrar Artesano</h2>
+        <form method="post">
+            {% csrf_token %}
+            
+            <div class="form-group">
+                {{ artesano_form.nombre.label_tag }}
+                {{ artesano_form.nombre }}
+            </div>
+
+            <div class="form-group">
+                {{ artesano_form.descripcion.label_tag }}
+                {{ artesano_form.descripcion }}
+            </div>
+
+            <div class="form-group">
+                <label for="id_feria_id">Selecciona Feria:</label>
+                <select name="feria_id" id="id_feria_id" required>
+                    <option value="">-- Selecciona una feria --</option>
+                    {% for f in ferias %}
+                        <option value="{{ f.id }}">
+                            {{ f.nombre }} ({{ f.fecha_inicio }} → {{ f.fecha_fin }}) 
+                            [{{ f.ocupados }}/{{ f.total_cupos }} cupos]
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="id_tipo">Tipo de Producto:</label>
+                <select name="tipo" id="id_tipo" required>
+                    <option value="">-- Selecciona una feria primero --</option>
+                </select>
+            </div>
+
+            <button type="submit" name="crear_artesano">➕ Agregar Artesano</button>
+        </form>
+    </div>
+
+
+    <div id="ferias-registradas" class="tab-content">
+        <h2>Ferias Registradas</h2>
+        <ul>
+            {% for f in ferias %}
+                <li>
+                    <span>
+                        <b>{{ f.nombre }}</b> ({{ f.ocupados }}/{{ f.total_cupos }})
+                        {{ f.fecha_inicio }} → {{ f.fecha_fin }}
+                    </span>
+                    <span>
+                        <form method="post" style="display:inline;">
+                            {% csrf_token %}
+                            <button type="submit" name="eliminar_feria" value="{{ f.id }}" class="list-btn">🗑 Eliminar</button>
+                        </form>
+                        <a href="{% url 'editar_feria' f.id %}" class="edit-link">✏️ Editar</a>
+                    </span>
+                </li>
+            {% empty %}
+                <li>No hay ferias.</li>
+            {% endfor %}
+        </ul>
+
+    </div>
+
+<div id="artesanos-registrados" class="tab-content">
+    <h2>Artesanos Registrados</h2>
+
+    <!-- 🔍 Barra de búsqueda y filtro -->
+    <div style="margin-bottom: 15px; display: flex; gap: 10px; align-items: center;">
+        <input type="text" id="search-artesano" placeholder="🔍 Buscar artesano por nombre..." 
+            style="padding:12px 15px; border-radius:8px; border:1px solid #aaa; flex:1;
+                    font-size:1rem; min-width:280px;">
+
+        
+        <select id="filter-feria" style="padding:6px; border-radius:6px; border:1px solid #ccc;">
+            <option value="">Todas las ferias</option>
+            {% for f in ferias %}
+                <option value="{{ f.id }}">{{ f.nombre }}</option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <!-- Lista de artesanos -->
+    <ul id="artesanos-list">
+        {% for a in artesanos %}
+            <li data-nombre="{{ a.nombre|lower }}" data-feria="{{ a.feria_id }}">
+                <span>
+                    <b>{{ a.nombre }}</b> ({{ a.tipo }}) – {{ a.descripcion }}
+                </span>
+                <span>
+                    <form method="post" style="display:inline;">
+                        {% csrf_token %}
+                        <button type="submit" name="eliminar_artesano" value="{{ a.id }}" class="list-btn">🗑 Eliminar</button>
+                    </form>
+                    <a href="{% url 'editar_artesano' a.id %}" class="edit-link">✏️ Editar</a>
+                </span>
+            </li>
+        {% empty %}
+            <li>No hay artesanos.</li>
+        {% endfor %}
+    </ul>
+</div>
+
+
+    <p><a href="{% url 'logout' %}">🚪 Cerrar sesión</a></p>
+
+    <script>
+        const feriasTipos = {{ ferias_tipos_json|safe }};
+
+    document.getElementById("id_feria_id").addEventListener("change", function() {
+        const feriaId = this.value;
+        const tipoSelect = document.getElementById("id_tipo");
+
+        // limpiar opciones anteriores
+        tipoSelect.innerHTML = "";
+
+        if (feriasTipos[feriaId] && feriasTipos[feriaId].length > 0) {
+            feriasTipos[feriaId].forEach(tp => {
+                const option = document.createElement("option");
+                option.value = tp.tipo;
+                option.textContent = `${tp.tipo} (${tp.ocupados}/${tp.cupos} cupos)`;
+                tipoSelect.appendChild(option);
+            });
+        } else {
+            const option = document.createElement("option");
+            option.value = "";
+            option.textContent = "⚠ No hay tipos disponibles";
+            tipoSelect.appendChild(option);
+        }
+    });
+        const tabs = document.querySelectorAll('.tab');
+        const contents = document.querySelectorAll('.tab-content');
+
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                tabs.forEach(t => t.classList.remove('active'));
+                contents.forEach(c => c.classList.remove('active'));
+                tab.classList.add('active');
+                document.getElementById(tab.dataset.tab).classList.add('active');
+                // Guardar pestaña seleccionada
+                localStorage.setItem('adminActiveTab', tab.dataset.tab);
+            });
+        });
+
+        // Restaurar la última pestaña activa al recargar
+        const savedTab = localStorage.getItem('adminActiveTab');
+        if (savedTab) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            document.querySelector(`.tab[data-tab="${savedTab}"]`).classList.add('active');
+            document.getElementById(savedTab).classList.add('active');
+        }
+
+        // Script dinámico para tipos en Feria
+        let tipoIndex = 1;
+        function agregarTipo() {
+            const container = document.getElementById("tipos-container");
+            const div = document.createElement("div");
+            div.innerHTML = `
+                Tipo: <input type="text" name="tipos-${tipoIndex}-tipo" required>
+                Cupos: <input type="number" name="tipos-${tipoIndex}-cupos" required>
+            `;
+            container.appendChild(div);
+            document.getElementById("id_tipos-TOTAL_FORMS").value = tipoIndex + 1;
+            tipoIndex++;
+        }
+        // --- Filtro y búsqueda de artesanos ---
+        const searchInput = document.getElementById("search-artesano");
+        const feriaFilter = document.getElementById("filter-feria");
+        const artesanosList = document.getElementById("artesanos-list");
+        const artesanosItems = artesanosList.querySelectorAll("li");
+
+        function filtrarArtesanos() {
+            const searchTerm = searchInput.value.toLowerCase();
+            const feriaValue = feriaFilter.value;
+
+            artesanosItems.forEach(item => {
+                const nombre = item.dataset.nombre;
+                const feriaId = item.dataset.feria;
+
+                const matchNombre = nombre.includes(searchTerm);
+                const matchFeria = feriaValue === "" || feriaId === feriaValue;
+
+                if (matchNombre && matchFeria) {
+                    item.style.display = "";
+                } else {
+                    item.style.display = "none";
+                }
+            });
+        }
+
+        searchInput.addEventListener("input", filtrarArtesanos);
+        feriaFilter.addEventListener("change", filtrarArtesanos);
+
+
+
+        
+    </script>
+</body>
+</html>

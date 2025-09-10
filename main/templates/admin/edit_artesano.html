@@ -1,0 +1,17 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="{% static 'main/admin_panel.css' %}">
+    <title>Editar Artesano</title>
+</head>
+<body>
+    <h1 style="color:#00e0ff;">✏️ Editar Artesano: {{ artesano.nombre }}</h1>
+    <form method="post" class="card">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">💾 Guardar Cambios</button>
+    </form>
+    <p><a href="{% url 'admin_panel' %}">⬅ Volver</a></p>
+</body>
+</html>
