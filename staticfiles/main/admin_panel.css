@@ -1,0 +1,205 @@
+body {
+    font-family: 'Rajdhani', sans-serif;
+    background: linear-gradient(180deg, #1a1a2e, #16213e, #0f3460);
+    background-attachment: fixed;
+    color: #eaeaea;
+    margin: 0;
+    padding: 40px 60px; /* más espacio arriba y a los lados */
+    text-align: center;
+}
+
+/* efecto de líneas retro */
+body::before {
+    content: "";
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: repeating-linear-gradient(
+        to bottom,
+        rgba(255, 255, 255, 0.05),
+        rgba(255, 255, 255, 0.05) 1px,
+        transparent 2px,
+        transparent 4px
+    );
+    pointer-events: none;
+    z-index: 0;
+}
+
+* {
+    position: relative;
+    z-index: 1;
+}
+
+/* títulos centrados y con más respiro */
+h1, h2, h3 {
+    font-family: 'Orbitron', monospace;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: #ff0080;
+    text-shadow: 
+        0 0 5px #ff0080,
+        0 0 10px #ff0080,
+        0 0 20px #00f0ff,
+        0 0 40px #00f0ff;
+    text-align: center;
+    margin: 30px auto; /* espacio arriba/abajo y centrado */
+}
+
+
+/* Botones retro */
+button {
+    background: #ff0080;
+    border: none;
+    border-radius: 4px;
+    color: #fff;
+    padding: 10px 18px;
+    font-weight: bold;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: 'Orbitron', monospace;
+}
+button:hover {
+    background: #00f0ff;
+    box-shadow: 0 0 15px #00f0ff;
+    transform: translateY(-2px);
+}
+
+
+label {
+    color: #00f0ff;
+    font-weight: bold;
+    margin-bottom: 5px;
+    display: block;
+}
+
+/* Inputs con glow */
+input, select, textarea {
+    width: 100%;
+    padding: 10px;
+    border-radius: 6px;
+    border: 2px solid #00f0ff;
+    background: rgba(0, 0, 0, 0.7);
+    color: #fff;
+    font-size: 1rem;
+    margin-bottom: 15px;
+    transition: all 0.3s ease;
+}
+input:focus, select:focus, textarea:focus {
+    border-color: #ff0080;
+    box-shadow: 0 0 10px #ff0080;
+    outline: none;
+}
+/* Lista de ferias */
+#ferias-registradas ul, 
+#artesanos-registrados ul {
+    list-style: none;
+    padding: 0;
+    margin: 20px auto;
+    max-width: 700px;
+}
+
+#ferias-registradas li, 
+#artesanos-registrados li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(0,0,0,0.5);
+    border: 1px solid #00f0ff;
+    border-radius: 8px;
+    padding: 10px 15px;
+    margin-bottom: 12px;
+    box-shadow: 0 0 10px rgba(0,240,255,0.3);
+}
+
+/* Texto dentro de la lista */
+#ferias-registradas li b, 
+#artesanos-registrados li b {
+    color: #ff0080;
+}
+
+/* Botones dentro de las listas */
+.list-btn {
+    padding: 6px 12px;
+    font-size: 0.9rem;
+    margin-left: 8px;
+}
+
+a.edit-link {
+    color: #00f0ff;
+    text-decoration: none;
+    font-weight: bold;
+    transition: 0.3s;
+}
+a.edit-link:hover {
+    color: #ff0080;
+    text-shadow: 0 0 6px #ff0080;
+}
+body {
+            text-align: center;
+        }
+        .tabs {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+            border-bottom: 2px solid rgba(255,255,255,0.2);
+            flex-wrap: wrap;
+        }
+        .tab {
+            padding: 12px 20px;
+            cursor: pointer;
+            text-transform: uppercase;
+            font-weight: bold;
+            color: #aaa;
+            transition: 0.3s;
+        }
+        .tab.active {
+            color: #00e0ff;
+            border-bottom: 2px solid #00e0ff;
+        }
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.5s;
+            max-width: 900px;
+            margin: 0 auto;
+            text-align: left;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        @keyframes fadeIn {
+            from {opacity: 0; transform: translateY(10px);}
+            to {opacity: 1; transform: translateY(0);}
+        }
+        /* Estilos retro para los formularios */
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 6px;
+    color: #00f0ff;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.form-group select,
+.form-group input,
+.form-group textarea {
+    width: 100%;
+    padding: 10px;
+    border-radius: 6px;
+    border: 2px solid #00f0ff;
+    background: rgba(0, 0, 0, 0.7);
+    color: #fff;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+.form-group select:focus,
+.form-group input:focus,
+.form-group textarea:focus {
+    border-color: #ff0080;
+    box-shadow: 0 0 10px #ff0080;
+    outline: none;
+}
