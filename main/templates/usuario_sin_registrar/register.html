@@ -1,0 +1,116 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="{% static 'main/login.css' %}">
+    <title>Registro</title>
+    <style>
+        body, html {
+            height: 100%; /* Asegura que la página ocupe toda la altura */
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #111; /* Fondo oscuro */
+        }
+
+        .auth-container {
+            width: 100%;
+            max-width: 500px;
+            padding: 20px;
+            border-radius: 8px;
+            background-color: #222;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+            overflow-y: auto; /* Habilita el scroll si el contenido es más grande */
+            max-height: 90vh; /* Limita la altura del contenedor */
+        }
+
+        .auth-title {
+            font-size: 24px;
+            margin-bottom: 10px;
+            color: #fff;
+        }
+
+        .auth-btn {
+            width: 100%;
+            padding: 10px;
+            background-color: #0072C6;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .auth-btn:hover {
+            background-color: #005999;
+        }
+
+        .auth-link {
+            color: #0072C6;
+            text-decoration: none;
+        }
+
+        .auth-link:hover {
+            text-decoration: underline;
+        }
+        select[name="role"] {
+    width: 100%;
+    padding: 10px;
+    background-color: #333;
+    color: white;
+    border-radius: 5px;
+    border: 1px solid #0072C6;
+    font-size: 16px;
+    margin-bottom: 15px; /* Espacio debajo del select */
+}
+
+select[name="role"]:focus {
+    outline: none; /* Elimina el borde de enfoque predeterminado */
+    border-color: #005999; /* Cambia el color del borde al enfocarse */
+    box-shadow: 0 0 5px rgba(0, 114, 198, 0.6); /* Agrega una sombra de enfoque */
+}
+    </style>
+</head>
+<body>
+    <div class="auth-container">
+        <div class="auth-title">Registro</div>
+
+        {% if messages %}
+            {% for message in messages %}
+                <div style="color: #b00020; margin-bottom: 10px;">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+
+        <form class="auth-form" method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+
+            <!-- Mostrar errores específicos de la contraseña -->
+            {% if form.password.errors %}
+                <div style="color: #b00020; margin-bottom: 10px;">
+                    {% for error in form.password.errors %}
+                        <p>{{ error }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            <!-- Mostrar errores específicos de la confirmación de la contraseña -->
+            {% if form.confirm_password.errors %}
+                <div style="color: #b00020; margin-bottom: 10px;">
+                    {% for error in form.confirm_password.errors %}
+                        <p>{{ error }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+            
+            <button class="auth-btn" type="submit">Registrarse</button>
+        </form>
+
+        <div style="margin-top: 1rem;">
+            <a class="auth-link" href="{% url 'login' %}">¿Ya tienes cuenta? Inicia sesión</a>
+        </div>
+    </div>
+</body>
+</html>

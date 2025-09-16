@@ -1,0 +1,83 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="{% static 'main/admin_panel.css' %}">
+    <title>Editar Feria</title>
+</head>
+<body>
+    <h1 style="color:#ff00ff;">✏️ Editar Feria</h1>
+    <form method="post" class="card">
+        {% csrf_token %}
+        <label>📛 Nombre:</label>
+        <input type="text" name="nombre" value="{{ feria.nombre }}" required>
+
+        <label>📅 Fecha de inicio:</label>
+        <input type="date" name="fecha_inicio" id="fecha_inicio" value="{{ feria.fecha_inicio }}" required>
+
+        <label>📅 Fecha de fin:</label>
+        <input type="date" name="fecha_fin" id="fecha_fin" value="{{ feria.fecha_fin }}" required>
+
+        <label>🎯 Preferencias:</label>
+        <input type="text" name="preferencias" value="{{ feria.preferencias }}">
+
+        <h3>🛍️ Tipos de productos</h3>
+        <div id="tipos-container">
+            {% for tp in tipos_productos %}
+                <div class="tipo-item">
+                    Tipo: <input type="text" name="tipos-{{ forloop.counter0 }}-tipo" value="{{ tp.tipo }}" required>
+                    Cupos: <input type="number" name="tipos-{{ forloop.counter0 }}-cupos" value="{{ tp.cupos }}" required>
+                    <button type="button" onclick="eliminarTipo(this)">🗑️</button> <br><br/>
+                </div>
+            {% empty %}
+                <div class="tipo-item">
+                    Tipo: <input type="text" name="tipos-0-tipo" required>
+                    Cupos: <input type="number" name="tipos-0-cupos" required>
+                    <button type="button" onclick="eliminarTipo(this)">🗑️</button><br><br/>
+                </div>
+            {% endfor %}
+        </div>
+
+        <input type="hidden" name="tipos-TOTAL_FORMS" value="{{ tipos_productos|length|default:1 }}" id="id_tipos-TOTAL_FORMS">
+
+        <button type="button" onclick="agregarTipo()">➕ Agregar otro tipo</button>
+        <button type="submit">💾 Guardar cambios</button>
+    </form>
+    <p><a href="{% url 'admin_panel' %}">⬅ Volver</a></p>
+
+<script>
+    let tipoIndex = {{ tipos_productos|length|default:1 }};
+    function agregarTipo() {
+        const c = document.getElementById("tipos-container");
+        const div = document.createElement("div");
+        div.className="tipo-item";
+        div.innerHTML=`Tipo: <input type="text" name="tipos-${tipoIndex}-tipo" required>
+                       Cupos: <input type="number" name="tipos-${tipoIndex}-cupos" required>
+                       <button type="button" onclick="eliminarTipo(this)">🗑️</button>`;
+        c.appendChild(div);
+        tipoIndex++;
+        document.getElementById("id_tipos-TOTAL_FORMS").value=tipoIndex;
+    }
+    function eliminarTipo(btn){ btn.parentElement.remove(); actualizarIndices(); }
+    function actualizarIndices(){ 
+        const items=document.querySelectorAll("#tipos-container .tipo-item");
+        items.forEach((d,i)=>{ 
+            d.querySelectorAll("input")[0].name=`tipos-${i}-tipo`;
+            d.querySelectorAll("input")[1].name=`tipos-${i}-cupos`; 
+        });
+        tipoIndex=items.length;
+        document.getElementById("id_tipos-TOTAL_FORMS").value=tipoIndex;
+    }
+    // fechas mínimas
+    const today=new Date().toISOString().split("T")[0];
+    document.getElementById("fecha_inicio").setAttribute("min",today);
+    document.getElementById("fecha_fin").setAttribute("min",today);
+    document.getElementById("fecha_inicio").addEventListener("change",function(){
+        document.getElementById("fecha_fin").min=this.value;
+        if(document.getElementById("fecha_fin").value<this.value){
+            document.getElementById("fecha_fin").value=this.value;
+        }
+    });
+</script>
+</body>
+</html>

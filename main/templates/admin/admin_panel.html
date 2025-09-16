@@ -1,0 +1,267 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="{% static 'main/admin_panel.css' %}">
+    <title>Panel Admin</title>
+</head>
+<body>
+    <a href="{% url 'logout' %}">
+                <button style="padding:8px 16px; border-radius:8px; border:none; background:#ff4500; color:#fff; font-weight:bold; cursor:pointer;">
+                    Cerrar sesión
+                </button>
+            </a>
+    {% if messages %}
+    <ul class="messages">
+        {% for message in messages %}
+        <li class="{{ message.tags }}">{{ message }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+
+    <h1>Panel del Administrador</h1>
+
+    <!-- Pestañas -->
+    <div class="tabs">
+        <div class="tab active" data-tab="crear-feria">Crear Feria</div>
+        <div class="tab" data-tab="solicitudes">Solicitudes</div>
+        <div class="tab" data-tab="ferias-registradas">Ferias Registradas</div>
+        <div class="tab" data-tab="artesanos-registrados">Artesanos Registrados</div>
+        <div class="tab" data-tab="usuarios">Usuarios</div>
+    </div>
+
+    <!-- Crear feria -->
+    <div id="crear-feria" class="tab-content active">
+        <h2>Crear Feria</h2>
+        <form method="post">
+            {% csrf_token %}
+            <input type="hidden" name="crear_feria" value="1">
+
+            <!-- FeriaForm -->
+            <div class="form-group">
+                {{ feria_form.nombre.label_tag }}
+                {{ feria_form.nombre }}
+            </div>
+            <div class="form-group">
+                {{ feria_form.fecha_inicio.label_tag }}
+                {{ feria_form.fecha_inicio }}
+            </div>
+            <div class="form-group">
+                {{ feria_form.fecha_fin.label_tag }}
+                {{ feria_form.fecha_fin }}
+            </div>
+            <div class="form-group">
+                {{ feria_form.preferencias.label_tag }}
+                {{ feria_form.preferencias }}
+            </div>
+
+            <!-- Tipos de productos -->
+            <h3>Tipos de productos</h3>
+            {{ tipo_formset.management_form }}
+            <div id="tipos-container">
+                {% for form in tipo_formset %}
+                    <div class="form-group">
+                        {{ form.tipo.label_tag }} {{ form.tipo }}
+                        {{ form.cupos.label_tag }} {{ form.cupos }}
+                    </div>
+                {% endfor %}
+            </div>
+
+            <button type="button" onclick="agregarTipo()" style="width:103%;">+ Agregar tipo</button><br><br/>
+            <button type="submit" style="width:103%;">Crear Feria</button>
+        </form>
+    </div>
+
+    <!-- Ferias registradas -->
+    <div id="ferias-registradas" class="tab-content">
+        <h2>Ferias Registradas</h2>
+        <ul>
+            {% for f in ferias %}
+                <li>
+                    <span>
+                        <b>{{ f.nombre }}</b> ({{ f.ocupados }}/{{ f.total_cupos }}) {{ f.fecha_inicio }} → {{ f.fecha_fin }}
+                    </span>
+                    <span>
+                        <form method="post" style="display:inline;">
+                            {% csrf_token %}
+                            <button type="submit" name="eliminar_feria" value="{{ f.id }}" class="list-btn">Eliminar</button>
+                        </form>
+                        <a href="{% url 'editar_feria' f.id %}" class="edit-link">Editar</a>
+                    </span>
+                </li>
+            {% empty %}
+                <li>No hay ferias.</li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <!-- Artesanos registrados -->
+    <div id="artesanos-registrados" class="tab-content">
+        <h2>Artesanos Registrados</h2>
+
+        <!-- Filtros -->
+        <div style="margin-bottom:15px; display:flex; gap:10px; align-items:center;">
+            <input type="text" id="search-artesano" placeholder="Buscar artesano por nombre..."
+                   style="padding:12px 15px; border-radius:8px; border:1px solid #aaa; flex:1; font-size:1rem; min-width:280px;">
+            <select id="filter-feria" style="padding:6px; border-radius:6px; border:1px solid #ccc;">
+                <option value="">Todas las ferias</option>
+                {% for f in ferias %}
+                    <option value="{{ f.id }}">{{ f.nombre }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <!-- Lista -->
+        <ul id="artesanos-list">
+            {% for a in artesanos %}
+                <li data-nombre="{{ a.nombre|lower }}" data-feria="{{ a.feria_id }}">
+                    <span><b>{{ a.nombre }}</b> ({{ a.tipo }}) – {{ a.descripcion }}</span>
+                    <span>
+                        <form method="post" style="display:inline;">
+                            {% csrf_token %}
+                            <button type="submit" name="eliminar_artesano" value="{{ a.id }}" class="list-btn">Eliminar</button>
+                        </form>
+                        <a href="{% url 'editar_artesano' a.id %}" class="edit-link">Editar</a>
+                    </span>
+                </li>
+            {% empty %}
+                <li>No hay artesanos.</li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <!-- Solicitudes -->
+    <div id="solicitudes" class="tab-content">
+        <h2>Solicitudes de Artesanos</h2>
+        <ul>
+            {% for s in solicitudes %}
+                <li>
+                    <b>{{ s.nombre }}</b> ({{ s.tipo }}) – {{ s.descripcion }}
+                    | Feria ID: {{ s.feria_id }}
+                    | Usuario: {{ s.usuario }}
+                    | Estado: <b>{{ s.estado }}</b>
+                    {% if s.estado == "pendiente" %}
+                    <form method="post" style="display:inline;">
+                        {% csrf_token %}
+                        <button type="submit" name="aprobar_solicitud" value="{{ s.id }}">Aprobar</button>
+                        <button type="submit" name="rechazar_solicitud" value="{{ s.id }}">Rechazar</button>
+                    </form>
+                    {% endif %}
+                </li>
+            {% empty %}
+                <li>No hay solicitudes.</li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <div id="usuarios" class="tab-content">
+        <h2>Usuarios registrados</h2>
+
+        {% if messages %}
+        <ul class="messages">{% for message in messages %}<li class="{{ message.tags }}">{{ message }}</li>{% endfor %}</ul>
+        {% endif %}
+
+        <table class="list">
+            <thead>
+                <tr>
+                    <th>Usuario</th>
+                    <th>Email</th>
+                    <th>Rol</th>
+                    <th>Estado</th>
+                    <th>Creado</th>
+                    <th>Último acceso</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for u in users %}
+                <tr>
+                    <td>{{ u.username }}</td>
+                    <td>{{ u.email|default:"—" }}</td>
+                    <td>{{ u.role }}</td>
+                    <td>{{ u.is_active|yesno:"Activo,Inactivo" }}</td>
+                    <td>{{ u.date_joined|date:"Y-m-d H:i" }}</td>
+                    <td>{{ u.last_login|date:"Y-m-d H:i"|default:"—" }}</td>
+                    <td>
+                        <a href="{% url 'edit_user' u.id %}" class="edit-link">Editar</a>
+                        {% if request.user.id != u.id %}
+                        <form method="post" style="display:inline;">
+                            {% csrf_token %}
+                            <button type="submit" name="eliminar_usuario" value="{{ u.id }}">Eliminar</button>
+                        </form>
+                        {% else %}
+                        <em>No puedes eliminarte</em>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="7">No hay usuarios.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <p><a href="{% url 'logout' %}">Cerrar sesión</a></p>
+
+    <script>
+        // Tabs
+        const tabs = document.querySelectorAll('.tab');
+        const contents = document.querySelectorAll('.tab-content');
+
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                tabs.forEach(t => t.classList.remove('active'));
+                contents.forEach(c => c.classList.remove('active'));
+                tab.classList.add('active');
+                document.getElementById(tab.dataset.tab).classList.add('active');
+                localStorage.setItem('adminActiveTab', tab.dataset.tab);
+            });
+        });
+
+        const savedTab = localStorage.getItem('adminActiveTab');
+        if (savedTab && document.getElementById(savedTab)) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            document.querySelector(`.tab[data-tab="${savedTab}"]`).classList.add('active');
+            document.getElementById(savedTab).classList.add('active');
+        }
+
+        // Agregar más "tipos" en "Crear Feria"
+        let tipoIndex = {{ tipo_formset.total_form_count|default:1 }};
+        function agregarTipo() {
+            const container = document.getElementById("tipos-container");
+            const div = document.createElement("div");
+            div.className = "form-group";
+            div.innerHTML = `
+                <label>Tipo:</label> <input type="text" name="tipos-${tipoIndex}-tipo" required>
+                <label>Cupos:</label> <input type="number" name="tipos-${tipoIndex}-cupos" required>
+            `;
+            container.appendChild(div);
+            // actualizar management form
+            const totalEl = document.getElementById("id_tipos-TOTAL_FORMS");
+            if (totalEl) totalEl.value = tipoIndex + 1;
+            tipoIndex++;
+        }
+
+        // Filtro de artesanos
+        const searchInput = document.getElementById("search-artesano");
+        const feriaFilter = document.getElementById("filter-feria");
+        const artesanosList = document.getElementById("artesanos-list");
+        const artesanosItems = artesanosList ? artesanosList.querySelectorAll("li") : [];
+
+        function filtrarArtesanos() {
+            const searchTerm = (searchInput?.value || '').toLowerCase();
+            const feriaValue = feriaFilter?.value || '';
+
+            artesanosItems.forEach(item => {
+                const nombre = item.dataset.nombre || '';
+                const feriaId = item.dataset.feria || '';
+                const matchNombre = nombre.includes(searchTerm);
+                const matchFeria = feriaValue === "" || feriaId === feriaValue;
+                item.style.display = (matchNombre && matchFeria) ? "" : "none";
+            });
+        }
+        if (searchInput) searchInput.addEventListener("input", filtrarArtesanos);
+        if (feriaFilter) feriaFilter.addEventListener("change", filtrarArtesanos);
+    </script>
+</body>
+</html>

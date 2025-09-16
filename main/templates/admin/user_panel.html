@@ -1,0 +1,332 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ferias Disponibles</title>
+    <link rel="stylesheet" href="{% static 'main/user_panel.css' %}">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f4f6f9;
+            margin: 0;
+            padding: 0;
+            color: #333;
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            background-color: #1a1a2e;
+            color: #fff;
+        }
+
+        .header .welcome {
+            font-size: 20px;
+        }
+
+        .header .logout-button {
+            padding: 10px 20px;
+            border-radius: 8px;
+            background-color: #ff4500;
+            color: #fff;
+            font-weight: bold;
+            cursor: pointer;
+            border: none;
+            text-decoration: none;
+            transition: background-color 0.3s;
+        }
+
+        .header .logout-button:hover {
+            background-color: #ff1f00;
+        }
+
+        h1, h2 {
+            text-align: center;
+            color: #ff00ff;
+        }
+
+        .coverflow-wrapper {
+            width: 100%;
+            overflow: hidden;
+            position: relative;
+            margin-top: 40px;
+        }
+
+        .coverflow-container {
+            display: flex;
+            overflow-x: scroll;
+            gap: 20px;
+            padding: 20px 0;
+        }
+
+        .coverflow-item {
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            width: 280px;
+            flex-shrink: 0;
+            padding: 20px;
+            transition: transform 0.3s ease, opacity 0.3s ease;
+        }
+
+        .coverflow-item h3 {
+            margin-top: 0;
+            color: #1a1a2e;
+        }
+
+        .coverflow-item p {
+            margin: 10px 0;
+            color: #333;
+        }
+
+        .coverflow-item ul {
+            list-style: none;
+            padding: 0;
+            color: #555;
+        }
+
+        .coverflow-item ul li {
+            margin-bottom: 5px;
+        }
+
+        .coverflow-item .reflection {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 50%;
+            background: linear-gradient(transparent, rgba(255, 255, 255, 0.6));
+            border-radius: 0 0 10px 10px;
+            z-index: -1;
+        }
+
+        .nav-button {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background-color: rgba(255, 255, 255, 0.7);
+            border: none;
+            font-size: 24px;
+            padding: 10px;
+            cursor: pointer;
+            border-radius: 50%;
+        }
+
+        .prev {
+            left: 10px;
+        }
+
+        .next {
+            right: 10px;
+        }
+
+        .play-pause-button {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            background-color: rgba(255, 255, 255, 0.7);
+            border: none;
+            font-size: 20px;
+            padding: 10px;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        .artesanos-section, .search-section {
+            margin: 40px 0;
+            text-align: center;
+        }
+
+        .artesanos-list, .artesanos-search-list {
+            list-style: none;
+            padding: 0;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .artesanos-list li, .artesanos-search-list li {
+            padding: 12px;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .artesanos-search-list li {
+            font-size: 14px;
+            color: #333;
+        }
+
+        .search-form {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 12px;
+            max-width: 600px;
+            margin: 50px auto;
+        }
+
+        .search-form input, .search-form button {
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 1rem;
+            margin: 5px 0;
+        }
+
+        .search-form input {
+            border: 1px solid #00e0ff;
+            background: rgba(0, 0, 0, 0.3);
+            color: #fff;
+        }
+
+        .search-form button {
+            background: linear-gradient(45deg, #ff00ff, #00e0ff);
+            color: #fff;
+            border: none;
+        }
+
+        .search-form button:hover {
+            background-color: #ff4500;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header with username and logout button -->
+    <div class="header">
+        <div class="welcome">Bienvenido, {{ request.user.username }}</div>
+        <a href="{% url 'logout' %}">
+            <button class="logout-button">Cerrar sesión</button>
+        </a>
+    </div>
+
+    <h1>Ferias Disponibles</h1>
+
+    <!-- Coverflow of ferias -->
+    <div class="coverflow-wrapper">
+        <div class="coverflow-container" tabindex="0">
+            {% for feria in ferias %}
+                <div class="coverflow-item">
+                    <h3>{{ feria.nombre }}</h3>
+                    <p><b>Cupos:</b> {{ feria.ocupados }}/{{ feria.total_cupos }}</p>
+                    <p><b>Fechas:</b> {{ feria.fecha_inicio }} al {{ feria.fecha_fin }}</p>
+                    <p><b>Preferencias:</b> {{ feria.preferencias }}</p>
+                    <ul>
+                        {% for tp in feria.tipos %}
+                            <li>{{ tp.tipo }}: {{ tp.ocupados }}/{{ tp.cupos_totales }}</li>
+                        {% empty %}
+                            <li>No hay tipos de productos definidos</li>
+                        {% endfor %}
+                    </ul>
+                    <span id="countdown-{{ feria.id }}">Cargando...</span>
+                </div>
+            {% empty %}
+                <p style="color:#ccc;">No hay ferias disponibles</p>
+            {% endfor %}
+        </div>
+
+        <!-- Navigation buttons -->
+        <button class="nav-button prev" onclick="navigate(-1)">‹</button>
+        <button class="nav-button next" onclick="navigate(1)">›</button>
+
+        <!-- Play/Pause button -->
+        <button class="play-pause-button" onclick="toggleAutoplay">
+            <span class="play-icon">▶</span>
+            <span class="pause-icon" style="display:none;">❚❚</span>
+        </button>
+    </div>
+
+    <!-- Artesanos section -->
+    <div class="artesanos-section">
+        <h2>Artesanos</h2>
+        <ul id="artesanos-list">
+            <li>Selecciona una feria para ver sus artesanos...</li>
+        </ul>
+    </div>
+
+    <!-- Artesanos search -->
+    <div class="search-section">
+        <div class="search-form">
+            <h2>Buscar Artesanos</h2>
+            <form method="get" action="#buscar-artesanos">
+                <input type="text" id="busqueda" name="busqueda" value="{{ request.GET.busqueda|default:'' }}" placeholder="Ej: cerámica, tejidos...">
+                <button type="submit">Buscar</button>
+            </form>
+        </div>
+
+        {% if busqueda %}
+            <h3>Resultados de búsqueda para "{{ busqueda }}"</h3>
+            <ul class="artesanos-search-list">
+                {% for a in artesanos_filtrados %}
+                    <li>
+                        <b>{{ a.nombre }}</b> ({{ a.tipo }}) - {{ a.descripcion }} <br>
+                        Feria: {{ a.feria.nombre }} <br>
+                        Del {{ a.feria.fecha_inicio }} al {{ a.feria.fecha_fin }}
+                    </li>
+                {% empty %}
+                    <li>No se encontraron artesanos.</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    </div>
+
+    <!-- Artesanos -->
+    <div class="artesanos-section">
+        <h2>Todos los Artesanos</h2>
+        <ul class="artesanos-list">
+            {% for a in artesanos %}
+                <li><b>{{ a.nombre }}</b> ({{ a.tipo }}) - {{ a.descripcion }}</li>
+            {% empty %}
+                <li>No hay artesanos registrados</li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <script>
+        /* Countdown for each feria */
+        document.addEventListener("DOMContentLoaded", function() {
+            {% for feria in ferias %}
+                (function() {
+                    const startDate = new Date("{{ feria.fecha_inicio }}T00:00:00").getTime();
+                    const endDate = new Date("{{ feria.fecha_fin }}T23:59:59").getTime();
+                    const now = new Date().getTime();
+                    const countdownEl = document.getElementById("countdown-{{ feria.id }}");
+                    if (!countdownEl) return;
+
+                    let targetDate = startDate;
+                    let messagePrefix = "Inicia en:";
+                    if (now > startDate && now < endDate) {
+                        targetDate = endDate;
+                        messagePrefix = "Termina en:";
+                    }
+                    if (now > endDate) {
+                        countdownEl.innerHTML = "Finalizada";
+                        return;
+                    }
+
+                    const interval = setInterval(function() {
+                        const now = new Date().getTime();
+                        const distance = targetDate - now;
+                        if (distance <= 0) {
+                            clearInterval(interval);
+                            countdownEl.innerHTML = "En curso";
+                            return;
+                        }
+
+                        const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+                        const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                        const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                        const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+                        countdownEl.innerHTML = messagePrefix + " " + days + "d " + hours + "h " + minutes + "m " + seconds + "s";
+                    }, 1000);
+                })();
+            {% endfor %}
+        });
+    </script>
+
+</body>
+</html>

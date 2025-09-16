@@ -1,0 +1,39 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="{% static 'main/login.css' %}">
+    <title>Iniciar sesión</title>
+</head>
+<body>
+    <div class="auth-container">
+        <div class="auth-title">Iniciar sesión</div>
+
+        <!-- Mostrar los mensajes de éxito o error -->
+        {% if messages %}
+            {% for message in messages %}
+                <div style="color: #28a745; margin-bottom: 10px;">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+
+        <form class="auth-form" method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button class="auth-btn" type="submit">Entrar</button>
+        </form>
+
+        <a href="{% url 'public_view' %}">
+            <button class="auth-btn" type="button">Ver Ferias Públicas</button>
+        </a>
+
+        <div style="margin-top:1rem;">
+            <a class="auth-link" href="{% url 'register' %}">¿No tienes cuenta? Regístrate</a>
+        </div>
+
+        <!-- Agregar el enlace para recuperar la contraseña -->
+        <div style="margin-top: 1rem;">
+            <a class="auth-link" href="{% url 'password_reset' %}">¿Olvidaste tu contraseña?</a>
+        </div>
+    </div>
+</body>
+</html>

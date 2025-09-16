@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Editar Perfil y Productos</title>
+    <style>
+        body {
+            font-family: 'Poppins', Arial, sans-serif;
+            background: #f0f4f8;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 600px;
+            margin: 40px auto;
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+            padding: 32px 28px 24px 28px;
+        }
+        h2 {
+            text-align: center;
+            color: #ff00ff;
+            margin-bottom: 30px;
+        }
+        fieldset {
+            border: 1px solid #00e0ff;
+            border-radius: 8px;
+            margin-bottom: 24px;
+            padding: 18px 16px 12px 16px;
+            background: #f7fafd;
+        }
+        legend {
+            color: #00bcd4;
+            font-weight: bold;
+            padding: 0 8px;
+        }
+        label {
+            font-weight: bold;
+            color: #333;
+        }
+        input[type="text"], textarea {
+            width: 100%;
+            padding: 10px;
+            margin: 6px 0 16px 0;
+            border-radius: 7px;
+            border: 1px solid #ccc;
+            font-size: 1rem;
+            background: #f7f7f7;
+            box-sizing: border-box;
+        }
+        textarea {
+            min-height: 60px;
+            resize: vertical;
+        }
+        button[type="submit"] {
+            background: linear-gradient(45deg, #ff00ff, #00e0ff);
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            padding: 12px 0;
+            width: 100%;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+            margin-bottom: 8px;
+            transition: background 0.2s;
+        }
+        button[type="submit"]:hover {
+            background: linear-gradient(45deg, #00e0ff, #ff00ff);
+        }
+        a {
+            display: inline-block;
+            margin-top: 8px;
+            color: #00bcd4;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        .producto-form {
+            background: #f9f9fb;
+            border-radius: 7px;
+            padding: 10px 12px;
+            margin-bottom: 10px;
+            border: 1px solid #e0e0e0;
+        }
+        .producto-form label {
+            font-weight: normal;
+            color: #444;
+        }
+        .nuevo-producto {
+            background: #f3f7fa;
+            border-radius: 7px;
+            padding: 10px 12px;
+            margin-top: 14px;
+            border: 1px dashed #00e0ff;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2>Editar Perfil y Productos</h2>
+    <form method="post">
+        {% csrf_token %}
+        <fieldset>
+            <legend>Datos personales</legend>
+            {{ perfil_form.as_p }}
+        </fieldset>
+        <fieldset>
+            <legend>Productos ofrecidos</legend>
+            {{ productos_formset.management_form }}
+            {% for form in productos_formset %}
+                <div class="producto-form">
+                    {{ form.id }}
+                    {{ form.nombre.label_tag }} {{ form.nombre }}
+                    {{ form.descripcion.label_tag }} {{ form.descripcion }}
+                    Eliminar: {{ form.DELETE }}
+                </div>
+            {% empty %}
+                <div>No tienes productos registrados.</div>
+            {% endfor %}
+            <div class="nuevo-producto">
+                <label>Nuevo producto:</label>
+                <input type="text" name="nuevo_producto_nombre" placeholder="Nombre">
+                <input type="text" name="nuevo_producto_desc" placeholder="Descripción">
+            </div>
+        </fieldset>
+        <button type="submit">Guardar cambios</button>
+        <a href="{% url 'artesano_panel' %}">Cancelar</a>
+    </form>
+</div>
+</body>
+</html>

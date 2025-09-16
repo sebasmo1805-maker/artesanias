@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel del Artesano</title>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: #f0f4f8;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 20px auto;
+            padding: 30px;
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #00bcd4;
+            margin-top: 30px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            font-size: 1rem;
+            background-color: #f7f7f7;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #00bcd4;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(45deg, #ff00ff, #00e0ff);
+            color: #fff;
+            border-radius: 8px;
+            border: none;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #ff4500;
+        }
+
+        #info-feria {
+            margin: 10px 0;
+            font-size: 0.95rem;
+            opacity: 0.8;
+        }
+
+        h2 {
+            color: #00bcd4;
+            margin-top: 40px;
+            font-size: 1.5rem;
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        ul li {
+            padding: 12px;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .estado {
+            font-weight: bold;
+            text-transform: capitalize;
+        }
+
+        .estado.rechazado {
+            color: #ff4500;
+        }
+
+        .estado.aceptado {
+            color: #00e0ff;
+        }
+
+        .logout-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: #ff4500;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            text-decoration: none;
+            transition: background-color 0.3s ease;
+        }
+
+        .logout-btn:hover {
+            background-color: #ff1f00;
+        }
+
+    </style>
+</head>
+<body>
+
+<!-- Botón de cerrar sesión fijo en la parte superior derecha -->
+<a href="{% url 'logout' %}" class="logout-btn">Cerrar sesión</a>
+
+<div class="container">
+
+  <div style="font-size: 20px; text-align: center; margin-top: 20px;">
+    Bienvenido, {{ request.user.username }}  <!-- Mostrar el nombre del usuario -->
+  </div>
+  <h1>Panel del Artesano</h1>
+
+  {% if perfil_artesano %}
+  <fieldset style="margin: 30px 0 20px 0; padding: 18px 16px 12px 16px; background: #f7fafd; border-radius: 8px; border: 1px solid #00e0ff;">
+    <legend style="color: #00bcd4; font-weight: bold; padding: 0 8px;">Mi Perfil</legend>
+    <b>Nombre:</b> {{ perfil_artesano.nombre }}<br>
+    <b>Descripción:</b> {{ perfil_artesano.descripcion|default:'(Sin descripción)' }}
+  </fieldset>
+  <fieldset style="margin-bottom: 24px; padding: 18px 16px 12px 16px; background: #f7fafd; border-radius: 8px; border: 1px solid #00e0ff;">
+    <legend style="color: #00bcd4; font-weight: bold; padding: 0 8px;">Mis Productos</legend>
+    {% if productos %}
+      <ul>
+      {% for p in productos %}
+        <li><b>{{ p.nombre }}</b> – {{ p.descripcion|default:'(Sin descripción)' }}</li>
+      {% endfor %}
+      </ul>
+    {% else %}
+      <div>No tienes productos registrados.</div>
+    {% endif %}
+  </fieldset>
+  {% endif %}
+
+<form method="post">
+  {% csrf_token %}
+
+  <label>Nombre del Artesano:</label>
+  <input type="text" name="nombre" id="id_nombre" required>
+
+  <label>Descripción:</label>
+  <textarea name="descripcion" id="id_descripcion" rows="6"></textarea>
+
+  <label for="id_feria_id">Feria:</label>
+  <select name="feria_id" id="id_feria_id" required>
+    {% for f in ferias %}
+      <option value="{{ f.id }}">
+        {{ f.nombre }} ({{ f.ocupados }}/{{ f.total_cupos }} cupos)
+      </option>
+    {% endfor %}
+  </select>
+  <div id="info-feria" style="margin:.4rem 0 .8rem; font-size:.95rem; opacity:.8;"></div>
+
+  <label for="id_tipo">Tipo de Producto:</label>
+  <select name="tipo" id="id_tipo" required>
+    <option value="">Selecciona una feria…</option>
+  </select>
+
+  <button type="submit">📩 Enviar Solicitud</button>
+</form>
+
+<h2>Mis solicitudes</h2>
+<ul>
+  {% for s in solicitudes %}
+    <li><b>{{ s.nombre }}</b> ({{ s.tipo }}) – {{ s.descripcion }} → Estado: {{ s.estado }}</li>
+  {% empty %}
+    <li>No has enviado solicitudes aún.</li>
+  {% endfor %}
+</ul>
+
+<div style="text-align:right; margin: 20px 20px 0 0;">
+    <a href="{% url 'editar_perfil_artesano' %}">
+        <button style="padding:8px 16px; border-radius:8px; border:none; background:#ff00ff; color:#fff; font-weight:bold; cursor:pointer;">
+            Editar perfil y productos
+        </button>
+    </a>
+</div>
+
+<script>
+  // Datos que envía la vista
+  const feriasTipos = {{ ferias_tipos_json|safe }};
+  // Para mostrar “ocupados/totales” bajo el select de feria
+  const feriasResumen = {{ ferias|safe }};
+
+  const feriaSelect = document.getElementById('id_feria_id');
+  const tipoSelect  = document.getElementById('id_tipo');
+  const infoFeria   = document.getElementById('info-feria');
+
+  function renderInfoFeria(fid) {
+    const f = feriasResumen.find(x => String(x.id) === String(fid));
+    if (!f) { infoFeria.textContent = ''; return; }
+    infoFeria.textContent = `Cupos de la feria: ${f.ocupados}/${f.total_cupos}`;
+  }
+
+  function cargarTipos() {
+    const fid = feriaSelect.value;
+    const tipos = feriasTipos[fid] || [];
+
+    // actualizar resumen de feria
+    renderInfoFeria(fid);
+
+    // limpiar opciones
+    tipoSelect.innerHTML = '';
+    if (!tipos.length) {
+      const opt = document.createElement('option');
+      opt.value = '';
+      opt.textContent = '⚠ Esta feria no tiene tipos configurados';
+      tipoSelect.appendChild(opt);
+      return;
+    }
+
+    tipos.forEach(tp => {
+      const opt = document.createElement('option');
+      opt.value = tp.tipo;
+      opt.textContent = `${tp.tipo} (${tp.ocupados}/${tp.cupos} cupos)`;
+      tipoSelect.appendChild(opt);
+    });
+  }
+
+  // inicial + cambio
+  window.addEventListener('DOMContentLoaded', cargarTipos);
+  feriaSelect.addEventListener('change', cargarTipos);
+</script>
+
+</body>
+</html>
+
+
+
+

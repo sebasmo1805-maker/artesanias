@@ -1,0 +1,482 @@
+{
+    "ferias": [
+        {
+            "id": 1,
+            "nombre": "Feria de Sabores Andinos",
+            "fecha_inicio": "2025-09-06",
+            "fecha_fin": "2025-09-07",
+            "preferencias": "Comida típica y postres",
+            "ocupados": 10,
+            "tipos_productos": [
+                {
+                    "tipo": "comida",
+                    "cupos": 15
+                },
+                {
+                    "tipo": "dulces",
+                    "cupos": 10
+                }
+            ],
+            "cupos_totales": 25
+        },
+        {
+            "id": 2,
+            "nombre": "Expo Artesanías del Mundo",
+            "fecha_inicio": "2025-09-10",
+            "fecha_fin": "2025-09-15",
+            "preferencias": "Artesanía y textiles",
+            "ocupados": 10,
+            "tipos_productos": [
+                {
+                    "tipo": "artesania",
+                    "cupos": 20
+                },
+                {
+                    "tipo": "textiles",
+                    "cupos": 10
+                }
+            ],
+            "cupos_totales": 30
+        },
+        {
+            "id": 3,
+            "nombre": "Festival Retro Games",
+            "fecha_inicio": "2025-09-20",
+            "fecha_fin": "2025-09-23",
+            "preferencias": "Videojuegos clásicos y coleccionables",
+            "ocupados": 11,
+            "tipos_productos": [
+                {
+                    "tipo": "juegos",
+                    "cupos": 15
+                },
+                {
+                    "tipo": "coleccionables",
+                    "cupos": 10
+                }
+            ],
+            "cupos_totales": 25
+        },
+        {
+            "id": 4,
+            "nombre": "Mercado Verde",
+            "fecha_inicio": "2025-09-25",
+            "fecha_fin": "2025-09-28",
+            "preferencias": "Productos ecológicos y reciclaje",
+            "ocupados": 10,
+            "tipos_productos": [
+                {
+                    "tipo": "ecología",
+                    "cupos": 12
+                },
+                {
+                    "tipo": "reciclaje",
+                    "cupos": 12
+                }
+            ],
+            "cupos_totales": 24
+        },
+        {
+            "id": 5,
+            "nombre": "Feria Cultural Urbana",
+            "fecha_inicio": "2025-10-01",
+            "fecha_fin": "2025-10-04",
+            "preferencias": "Arte callejero, música y moda",
+            "ocupados": 10,
+            "tipos_productos": [
+                {
+                    "tipo": "arte",
+                    "cupos": 10
+                },
+                {
+                    "tipo": "música",
+                    "cupos": 10
+                },
+                {
+                    "tipo": "moda",
+                    "cupos": 10
+                }
+            ],
+            "cupos_totales": 30
+        }
+    ],
+    "artesanos": [
+        {
+            "id": 1,
+            "nombre": "María",
+            "tipo": "comida",
+            "descripcion": "Empanadas regionales",
+            "feria_id": 1
+        },
+        {
+            "id": 2,
+            "nombre": "José",
+            "tipo": "comida",
+            "descripcion": "Ceviche fresco",
+            "feria_id": 1
+        },
+        {
+            "id": 3,
+            "nombre": "Ana",
+            "tipo": "comida",
+            "descripcion": "Tamales caseros",
+            "feria_id": 1
+        },
+        {
+            "id": 4,
+            "nombre": "Carlos",
+            "tipo": "comida",
+            "descripcion": "Asado criollo",
+            "feria_id": 1
+        },
+        {
+            "id": 5,
+            "nombre": "Laura",
+            "tipo": "dulces",
+            "descripcion": "Chocolates artesanales",
+            "feria_id": 1
+        },
+        {
+            "id": 6,
+            "nombre": "Pedro",
+            "tipo": "dulces",
+            "descripcion": "Dulce de leche casero",
+            "feria_id": 1
+        },
+        {
+            "id": 7,
+            "nombre": "Sofía",
+            "tipo": "dulces",
+            "descripcion": "Helados artesanales",
+            "feria_id": 1
+        },
+        {
+            "id": 8,
+            "nombre": "Andrés",
+            "tipo": "comida",
+            "descripcion": "Humitas andinas",
+            "feria_id": 1
+        },
+        {
+            "id": 9,
+            "nombre": "Valentina",
+            "tipo": "dulces",
+            "descripcion": "Tortas decoradas",
+            "feria_id": 1
+        },
+        {
+            "id": 10,
+            "nombre": "Martín",
+            "tipo": "comida",
+            "descripcion": "Papas rellenas",
+            "feria_id": 1
+        },
+        {
+            "id": 11,
+            "nombre": "Lucía",
+            "tipo": "artesania",
+            "descripcion": "Tallados en madera",
+            "feria_id": 2
+        },
+        {
+            "id": 12,
+            "nombre": "Miguel",
+            "tipo": "artesania",
+            "descripcion": "Joyas en plata",
+            "feria_id": 2
+        },
+        {
+            "id": 13,
+            "nombre": "Camila",
+            "tipo": "textiles",
+            "descripcion": "Tejidos a mano",
+            "feria_id": 2
+        },
+        {
+            "id": 14,
+            "nombre": "Rosa",
+            "tipo": "artesania",
+            "descripcion": "Cerámica decorativa",
+            "feria_id": 2
+        },
+        {
+            "id": 15,
+            "nombre": "Esteban",
+            "tipo": "artesania",
+            "descripcion": "Cestería tradicional",
+            "feria_id": 2
+        },
+        {
+            "id": 16,
+            "nombre": "Julieta",
+            "tipo": "textiles",
+            "descripcion": "Bordados artesanales",
+            "feria_id": 2
+        },
+        {
+            "id": 17,
+            "nombre": "Tomás",
+            "tipo": "artesania",
+            "descripcion": "Máscaras culturales",
+            "feria_id": 2
+        },
+        {
+            "id": 18,
+            "nombre": "Daniela",
+            "tipo": "artesania",
+            "descripcion": "Esculturas de barro",
+            "feria_id": 2
+        },
+        {
+            "id": 19,
+            "nombre": "Iván",
+            "tipo": "textiles",
+            "descripcion": "Ponchos y bufandas",
+            "feria_id": 2
+        },
+        {
+            "id": 20,
+            "nombre": "Patricia",
+            "tipo": "artesania",
+            "descripcion": "Pintura en vidrio",
+            "feria_id": 2
+        },
+        {
+            "id": 21,
+            "nombre": "Diego",
+            "tipo": "juegos",
+            "descripcion": "Consolas retro",
+            "feria_id": 3
+        },
+        {
+            "id": 22,
+            "nombre": "Carla",
+            "tipo": "juegos",
+            "descripcion": "Arcades clásicos",
+            "feria_id": 3
+        },
+        {
+            "id": 23,
+            "nombre": "Fernando",
+            "tipo": "coleccionables",
+            "descripcion": "Figuras de acción",
+            "feria_id": 3
+        },
+        {
+            "id": 24,
+            "nombre": "Natalia",
+            "tipo": "juegos",
+            "descripcion": "Torneos de Mario Kart",
+            "feria_id": 3
+        },
+        {
+            "id": 25,
+            "nombre": "Gonzalo",
+            "tipo": "coleccionables",
+            "descripcion": "Cartas de colección",
+            "feria_id": 3
+        },
+        {
+            "id": 26,
+            "nombre": "Paula",
+            "tipo": "juegos",
+            "descripcion": "Competencias de Tetris",
+            "feria_id": 3
+        },
+        {
+            "id": 27,
+            "nombre": "Rodrigo",
+            "tipo": "juegos",
+            "descripcion": "Consolas portátiles",
+            "feria_id": 3
+        },
+        {
+            "id": 28,
+            "nombre": "Martina",
+            "tipo": "coleccionables",
+            "descripcion": "Muñecos vintage",
+            "feria_id": 3
+        },
+        {
+            "id": 29,
+            "nombre": "Hugo",
+            "tipo": "juegos",
+            "descripcion": "Juegos de mesa clásicos",
+            "feria_id": 3
+        },
+        {
+            "id": 30,
+            "nombre": "Florencia",
+            "tipo": "coleccionables",
+            "descripcion": "Vinilos de colección",
+            "feria_id": 3
+        },
+        {
+            "id": 31,
+            "nombre": "Alejandro",
+            "tipo": "ecología",
+            "descripcion": "Productos biodegradables",
+            "feria_id": 4
+        },
+        {
+            "id": 32,
+            "nombre": "Cecilia",
+            "tipo": "ecología",
+            "descripcion": "Cosmética natural",
+            "feria_id": 4
+        },
+        {
+            "id": 33,
+            "nombre": "Hernán",
+            "tipo": "reciclaje",
+            "descripcion": "Arte con materiales reciclados",
+            "feria_id": 4
+        },
+        {
+            "id": 34,
+            "nombre": "Luciana",
+            "tipo": "ecología",
+            "descripcion": "Bolsas reutilizables",
+            "feria_id": 4
+        },
+        {
+            "id": 35,
+            "nombre": "Javier",
+            "tipo": "reciclaje",
+            "descripcion": "Muebles reciclados",
+            "feria_id": 4
+        },
+        {
+            "id": 36,
+            "nombre": "Mariana",
+            "tipo": "ecología",
+            "descripcion": "Productos orgánicos",
+            "feria_id": 4
+        },
+        {
+            "id": 37,
+            "nombre": "Pablo",
+            "tipo": "reciclaje",
+            "descripcion": "Esculturas ecológicas",
+            "feria_id": 4
+        },
+        {
+            "id": 38,
+            "nombre": "Andrea",
+            "tipo": "ecología",
+            "descripcion": "Ropa sustentable",
+            "feria_id": 4
+        },
+        {
+            "id": 39,
+            "nombre": "Felipe",
+            "tipo": "ecología",
+            "descripcion": "Huertos urbanos",
+            "feria_id": 4
+        },
+        {
+            "id": 40,
+            "nombre": "Verónica",
+            "tipo": "reciclaje",
+            "descripcion": "Juguetes reciclados",
+            "feria_id": 4
+        },
+        {
+            "id": 41,
+            "nombre": "Nicolás",
+            "tipo": "arte",
+            "descripcion": "Murales urbanos",
+            "feria_id": 5
+        },
+        {
+            "id": 42,
+            "nombre": "Carolina",
+            "tipo": "música",
+            "descripcion": "DJ sets electrónicos",
+            "feria_id": 5
+        },
+        {
+            "id": 43,
+            "nombre": "Ricardo",
+            "tipo": "moda",
+            "descripcion": "Ropa alternativa",
+            "feria_id": 5
+        },
+        {
+            "id": 44,
+            "nombre": "Milagros",
+            "tipo": "arte",
+            "descripcion": "Graffiti en vivo",
+            "feria_id": 5
+        },
+        {
+            "id": 45,
+            "nombre": "Agustín",
+            "tipo": "música",
+            "descripcion": "Bandas de rock local",
+            "feria_id": 5
+        },
+        {
+            "id": 46,
+            "nombre": "Elena",
+            "tipo": "arte",
+            "descripcion": "Fotografía urbana",
+            "feria_id": 5
+        },
+        {
+            "id": 47,
+            "nombre": "Franco",
+            "tipo": "moda",
+            "descripcion": "Accesorios de autor",
+            "feria_id": 5
+        },
+        {
+            "id": 48,
+            "nombre": "Micaela",
+            "tipo": "música",
+            "descripcion": "Canto lírico alternativo",
+            "feria_id": 5
+        },
+        {
+            "id": 49,
+            "nombre": "Santiago",
+            "tipo": "arte",
+            "descripcion": "Esculturas urbanas",
+            "feria_id": 5
+        },
+        {
+            "id": 50,
+            "nombre": "Bianca",
+            "tipo": "moda",
+            "descripcion": "Diseños sostenibles",
+            "feria_id": 5
+        },
+        {
+            "nombre": "Terran",
+            "tipo": "juegos",
+            "descripcion": "Desarrollo software",
+            "feria_id": 3,
+            "id": 51
+        }
+    ],
+    "solicitudes": [
+        {
+            "id": 5,
+            "usuario": "sasa",
+            "nombre": "Santiago Mahecha",
+            "descripcion": ".",
+            "feria_id": 1,
+            "tipo": "dulces",
+            "estado": "aceptado"
+        },
+        {
+            "id": 6,
+            "usuario": "sasa",
+            "nombre": "Yamal",
+            "descripcion": "Frutas",
+            "feria_id": 2,
+            "tipo": "artesania",
+            "estado": "aceptado"
+        }
+    ]
+}

@@ -1,0 +1,405 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="{% static 'main/public.css' %}">
+    <link rel="stylesheet" href="{% static 'main/user_panel.css' %}">
+    <title>Ferias disponibles</title>
+    <style>
+    /* Estilos básicos para el coverflow si no existen en user_panel.css */
+    .coverflow-wrapper {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 350px;
+        margin: 40px 0;
+        width: 100vw;
+    }
+    .coverflow-container {
+        position: relative;
+        background: rgba(40,40,60,0.9);
+        border-radius: 18px;
+        box-shadow: 0 8px 32px #0008;
+        padding: 30px 20px 40px 20px;
+        min-width: 320px;
+        min-height: 320px;
+        outline: none;
+        margin: 0 auto;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        max-width: 1200px;
+    }
+    .coverflow {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        perspective: 1200px;
+        min-height: 250px;
+        position: relative;
+        width: 100%;
+        max-width: 1200px;
+        margin: 0 auto;
+        height: 400px;
+    }
+    .coverflow-item {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        transition: all 0.6s cubic-bezier(.4,2,.3,1);
+        width: 380px;
+        max-width: 95vw;
+        min-height: 250px;
+        opacity: 0;
+        z-index: 1;
+        pointer-events: none;
+        box-shadow: 0 4px 24px #0007;
+        margin: 0 auto;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .coverflow-item.active {
+        opacity: 1;
+        z-index: 10;
+        pointer-events: auto;
+    }
+    .cover {
+        background: rgba(0,0,0,0.7);
+        border-radius: 12px;
+        padding: 18px 16px 12px 16px;
+        color: #fff;
+        box-shadow: 0 2px 12px #0006;
+        min-height: 210px;
+    }
+    .nav-button {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        background: #00e0ff;
+        color: #fff;
+        border: none;
+        border-radius: 50%;
+        width: 38px;
+        height: 38px;
+        font-size: 1.7em;
+        cursor: pointer;
+        z-index: 20;
+        opacity: 0.8;
+    }
+    .nav-button.prev { left: -50px; }
+    .nav-button.next { right: -50px; }
+    .dots-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-top: 18px;
+        margin-bottom: 32px;
+        gap: 8px;
+        position: relative;
+        z-index: 10;
+        width: 100%;
+        margin-left: 0;
+        margin-right: 0;
+    }
+    .dot {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background: #fff3;
+        border: 2px solid #00e0ff;
+        cursor: pointer;
+        transition: background 0.2s;
+    }
+    .dot.active { background: #00e0ff; }
+    .play-pause-button {
+        display: block;
+        margin: 24px auto 0 auto;
+        position: static;
+        background: #ff00ff;
+        color: #fff;
+        border: none;
+        border-radius: 50%;
+        width: 32px;
+        height: 32px;
+        font-size: 1.1em;
+        cursor: pointer;
+        z-index: 10;
+        opacity: 0.8;
+    }
+    .tabs { display: flex; gap: 10px; margin-bottom: 20px; justify-content: center; }
+    .tab-btn { padding: 10px 20px; border: none; border-radius: 8px; background: #eee; cursor: pointer; }
+    .tab-btn.active { background: #00e0ff; color: #fff; }
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+    </style>
+</head>
+<body>
+    <!-- Datos seguros para JS -->
+    {{ ferias|json_script:"ferias-data" }}
+    {{ artesanos_por_feria|json_script:"artesanos-data" }}
+
+    <!-- Botón de logout -->
+    <div style="text-align:right; margin: 15px 20px;">
+        <a href="{% url 'logout' %}?next=/">
+            <button style="padding:8px 16px; border-radius:8px; border:none; background:#00e0ff; color:#fff; font-weight:bold; cursor:pointer;">
+                Cerrar Sesión
+            </button>
+        </a>
+    </div>
+
+    <!-- Tabs navegación -->
+    <div class="tabs">
+      <button class="tab-btn active" onclick="showTab('ferias')">Ferias</button>
+      <button class="tab-btn" onclick="showTab('favoritos')">Favoritos</button>
+      <button class="tab-btn" onclick="showTab('artesanos')">Artesanos</button>
+    </div>
+
+    <!-- Tab Ferias (carrusel) -->
+    <div id="tab-ferias" class="tab-content active">
+      <h1 style="text-align:center; margin-bottom:20px; color:#ff00ff;">Ferias disponibles</h1>
+      <div class="coverflow-wrapper">
+        <div class="coverflow-container" tabindex="0">
+          <div class="coverflow" id="coverflow">
+            {% if ferias and ferias|length > 0 %}
+              {% for feria in ferias %}
+              <div class="coverflow-item">
+                <div class="cover">
+                  <h3>{{ feria.nombre }}</h3>
+                  <p><b>Cupos:</b> {{ feria.ocupados }}/{{ feria.total_cupos }}</p>
+                  <p><b>Fechas:</b> {{ feria.fecha_inicio }} al {{ feria.fecha_fin }}</p>
+                  <p><b>Preferencias:</b> {{ feria.preferencias }}</p>
+                  <ul>
+                    {% for tp in feria.tipos %}
+                      <li>{{ tp.tipo }}: {{ tp.ocupados }}/{{ tp.cupos_totales }}</li>
+                    {% empty %}
+                      <li>No hay tipos de productos definidos</li>
+                    {% endfor %}
+                  </ul>
+                  <span id="countdown-{{ feria.id }}">Cargando...</span>
+                  <!-- Botón favorito -->
+                  <form method="post" style="margin-top:12px;">
+                    {% csrf_token %}
+                    <input type="hidden" name="fav_feria_id" value="{{ feria.id }}">
+                    {% if feria.id in favoritas_ids %}
+                      <button type="submit" style="background:none;border:none;color:#ff00ff;cursor:pointer;font-size:1.2em;">
+                        ★ Quitar favorito
+                      </button>
+                    {% else %}
+                      <button type="submit" style="background:none;border:none;color:#00bcd4;cursor:pointer;font-size:1.2em;">
+                        ☆ Marcar favorito
+                      </button>
+                    {% endif %}
+                  </form>
+                </div>
+                <div class="reflection"></div>
+              </div>
+              {% endfor %}
+            {% else %}
+              <div style="color:#fff; text-align:center; font-size:1.3em; width:100%; padding:80px 0;">No hay ferias disponibles actualmente.</div>
+            {% endif %}
+          </div>
+          <button class="nav-button prev" type="button" id="btn-prev">‹</button>
+          <button class="nav-button next" type="button" id="btn-next">›</button>
+          <div class="dots-container" id="dots"></div>
+          <button class="play-pause-button" type="button" id="playPauseBtn">
+            <span id="play-icon" style="display:none;">▶</span>
+            <span id="pause-icon">❚❚</span>
+          </button>
+        </div>
+      </div>
+      <h2 style="text-align:center; margin:40px 0 15px; color:#00e0ff;">Artesanos de la feria seleccionada</h2>
+      <ul id="artesanos-list" style="list-style:none; padding:0; max-width:800px; margin:0 auto; color:#ddd; text-align:center;"></ul>
+    </div>
+
+    <!-- Tab Favoritos -->
+    <div id="tab-favoritos" class="tab-content">
+      <h2 style="text-align:center; margin:40px 0 15px; color:#00e0ff;">Ferias Favoritas</h2>
+      <ul style="list-style:none; padding:0; max-width:800px; margin:0 auto; color:#ddd;">
+        {% for feria in favoritas %}
+          <li style="padding:8px 0; border-bottom:1px solid rgba(255,255,255,0.1);">
+            <b>{{ feria.nombre }}</b>
+            <form method="post" style="display:inline;">
+              {% csrf_token %}
+              <input type="hidden" name="fav_feria_id" value="{{ feria.id }}">
+              <button type="submit" style="background:none;border:none;color:#ff00ff;cursor:pointer;">Quitar favorito</button>
+            </form>
+          </li>
+        {% empty %}
+          <li style="text-align:center; padding:20px 0;">No tienes ferias favoritas.</li>
+        {% endfor %}
+      </ul>
+    </div>
+
+    <!-- Tab Artesanos -->
+    <div id="tab-artesanos" class="tab-content">
+      <h2 style="text-align:center; margin:40px 0 15px; color:#00e0ff;">Todos los Artesanos</h2>
+      <ul style="list-style:none; padding:0; max-width:800px; margin:0 auto; color:#ddd;">
+        {% for a in artesanos %}
+          <li style="padding:8px 0; border-bottom:1px solid rgba(255,255,255,0.1);">
+            <b>{{ a.nombre }}</b>
+            {% if a.tipo %} ({{ a.tipo }}){% endif %}
+            {% if a.descripcion %} - {{ a.descripcion }}{% endif %}
+            {% if a.feria_id %}
+              <span style="color:#00e0ff;">
+                — Feria:
+                {% for f in ferias %}
+                  {% if f.id == a.feria_id %}
+                    {{ f.nombre }}
+                  {% endif %}
+                {% endfor %}
+              </span>
+            {% endif %}
+          </li>
+        {% empty %}
+          <li>No hay artesanos registrados</li>
+        {% endfor %}
+      </ul>
+    </div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  const ferias = JSON.parse(document.getElementById('ferias-data').textContent);
+  let artesanosPorFeria = JSON.parse(document.getElementById('artesanos-data').textContent);
+  const normalizado = {};
+  Object.keys(artesanosPorFeria).forEach(k => {
+    const lista = artesanosPorFeria[k] || [];
+    normalizado[String(k)] = Array.isArray(lista) ? lista.filter(a => a && a.nombre && a.nombre.trim() !== "") : [];
+  });
+  artesanosPorFeria = normalizado;
+
+  const items = document.querySelectorAll('.coverflow-item');
+  const dotsContainer = document.getElementById('dots');
+  const container = document.querySelector('.coverflow-container');
+  const artesanosList = document.getElementById('artesanos-list');
+
+  function mostrarArtesanos(feriaId) {
+    const lista = artesanosPorFeria[String(feriaId)] || [];
+    if (Array.isArray(lista) && lista.length > 0) {
+      artesanosList.innerHTML = lista.map(a => `
+        <li style="padding:10px; border-bottom:1px solid rgba(255,255,255,0.1);">
+          <b>${a.nombre}</b>${a.tipo ? ' ('+a.tipo+')' : ''}${a.descripcion ? ' - '+a.descripcion : ''}
+        </li>
+      `).join("");
+    } else {
+      artesanosList.innerHTML = "<li>No hay artesanos registrados en esta feria.</li>";
+    }
+  }
+
+  items.forEach((_, index) => {
+    const dot = document.createElement('div');
+    dot.className = 'dot';
+    dot.onclick = () => goToIndex(index);
+    dotsContainer.appendChild(dot);
+  });
+  const dots = document.querySelectorAll('.dot');
+
+  let currentIndex = 0;
+  let isAnimating = false;
+  let autoplayInterval = null;
+  let isPlaying = true;
+  const playIcon = document.getElementById('play-icon');
+  const pauseIcon = document.getElementById('pause-icon');
+  const btnPrev = document.getElementById('btn-prev');
+  const btnNext = document.getElementById('btn-next');
+  const playPauseBtn = document.getElementById('playPauseBtn');
+
+  function updateCoverflow() {
+    if (isAnimating) return;
+    isAnimating = true;
+    const maxOffset = 2;
+    const baseX = 420;
+    const baseZ = 220;
+    items.forEach((item, index) => {
+      let offset = index - currentIndex;
+      if (offset > items.length/2) offset -= items.length;
+      else if (offset < -items.length/2) offset += items.length;
+      const absOffset = Math.abs(offset), sign = Math.sign(offset);
+      let translateX = offset*baseX, translateZ = -absOffset*baseZ;
+      let rotateY = -sign * Math.min(absOffset*45, 45);
+      let opacity = 1-(absOffset*0.3), scale = 1-(absOffset*0.13);
+      if (absOffset > maxOffset) { opacity=0; translateX=sign*1400; }
+      item.style.position = absOffset === 0 ? 'relative' : 'absolute';
+      item.style.left = absOffset === 0 ? '0' : '50%';
+      item.style.top = absOffset === 0 ? '0' : '50%';
+      item.style.transform = absOffset === 0
+        ? 'none'
+        : `translate(-50%, -50%) translateX(${translateX}px) translateZ(${translateZ}px) rotateY(${rotateY}deg) scale(${scale})`;
+      item.style.opacity = opacity;
+      item.style.zIndex = 100-absOffset;
+      item.classList.toggle('active', index===currentIndex);
+    });
+    dots.forEach((dot,i)=>dot.classList.toggle('active', i===currentIndex));
+    const feriaActiva = ferias[currentIndex];
+    mostrarArtesanos(feriaActiva.id);
+    setTimeout(()=>{isAnimating=false;},600);
+  }
+
+  function navigate(d){
+    if(isAnimating)return;
+    currentIndex+=d;
+    if(currentIndex<0)currentIndex=items.length-1;
+    if(currentIndex>=items.length)currentIndex=0;
+    updateCoverflow();
+  }
+  function goToIndex(i){
+    if(isAnimating||i===currentIndex)return;
+    currentIndex=i;
+    updateCoverflow();
+  }
+  function startAutoplay(){
+    if(autoplayInterval) clearInterval(autoplayInterval);
+    autoplayInterval=setInterval(()=>{currentIndex=(currentIndex+1)%items.length; updateCoverflow();},4000);
+    isPlaying=true;
+    if(playIcon) playIcon.style.display='none';
+    if(pauseIcon) pauseIcon.style.display='inline';
+  }
+  function stopAutoplay(){
+    if(autoplayInterval){ clearInterval(autoplayInterval); autoplayInterval=null; }
+    isPlaying=false;
+    if(playIcon) playIcon.style.display='inline';
+    if(pauseIcon) pauseIcon.style.display='none';
+  }
+  function toggleAutoplay(){
+    if(isPlaying){
+      stopAutoplay();
+    }else{
+      startAutoplay();
+    }
+  }
+
+  if(playPauseBtn) playPauseBtn.addEventListener('click', function(e){ e.preventDefault(); toggleAutoplay(); });
+  if(btnPrev) btnPrev.addEventListener('click', function(e){ e.preventDefault(); navigate(-1); });
+  if(btnNext) btnNext.addEventListener('click', function(e){ e.preventDefault(); navigate(1); });
+
+  items.forEach((item,i)=>item.addEventListener('click',()=>goToIndex(i)));
+  container.addEventListener('keydown',e=>{
+    if(e.key==='ArrowLeft'){ e.preventDefault(); navigate(-1);}
+    if(e.key==='ArrowRight'){ e.preventDefault(); navigate(1);}
+  });
+  let touchStartX=0,touchEndX=0;
+  container.addEventListener('touchstart',e=>{touchStartX=e.changedTouches[0].screenX;},{passive:true});
+  container.addEventListener('touchend',e=>{
+    touchEndX=e.changedTouches[0].screenX;
+    const diff=touchStartX-touchEndX;
+    if(Math.abs(diff)>30){ diff>0?navigate(1):navigate(-1);}
+  },{passive:true});
+  // Solo actualiza artesanos al cambiar de tab a ferias
+  window.showTab = function(tab) {
+    document.querySelectorAll('.tab-content').forEach(e=>e.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(e=>e.classList.remove('active'));
+    document.getElementById('tab-'+tab).classList.add('active');
+    document.querySelector('.tab-btn[onclick*="'+tab+'"]').classList.add('active');
+    if(tab === 'ferias') {
+      updateCoverflow();
+    }
+  };
+
+  updateCoverflow(); 
+  container.focus(); 
+  startAutoplay();
+});
+</script>
+</body>
+</html>
