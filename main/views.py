@@ -101,6 +101,8 @@ def user_panel(request):
     artesanos = data.get("artesanos", [])
     solicitudes = data.get("solicitudes", [])
 
+   
+
     # --- Sincroniza ferias del modelo con el JSON (solo nombre y fechas) ---
     ferias_db_map = {}
     for f in ferias_json:
@@ -167,6 +169,11 @@ def user_panel(request):
 
     form = SolicitudFeriaForm()
 
+    artesanos_por_feria = {}
+    for a in artesanos:
+        fid = a.get("feria_id")
+        artesanos_por_feria.setdefault(fid, []).append(a)
+        
     return render(request, "usuario_registrado/user_panel.html", {
         "form": form,
         "solicitudes": [s for s in solicitudes if s.get("usuario") == request.user.username],
@@ -175,6 +182,7 @@ def user_panel(request):
         "favoritas": favoritas,
         "favoritas_ids": list(ferias_db_map[k].id for k in ferias_db_map if ferias_db_map[k] in favoritas),
         "artesanos": artesanos,  # <-- Agrega esta línea
+        "artesanos_por_feria": artesanos_por_feria, 
     })
 
 
@@ -567,6 +575,7 @@ def public_view(request):
         "busqueda": busqueda,
         "artesanos_filtrados": artesanos_filtrados,
         "artesanos_por_feria": json.dumps(artesanos_por_feria),
+        
     })
 
 @login_required

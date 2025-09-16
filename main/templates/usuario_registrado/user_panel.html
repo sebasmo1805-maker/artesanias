@@ -172,12 +172,11 @@
                   <p><b>Preferencias:</b> {{ feria.preferencias }}</p>
                   <ul>
                     {% for tp in feria.tipos %}
-                      <li>{{ tp.tipo }}: {{ tp.ocupados }}/{{ tp.cupos_totales }}</li>
+                      <li>{{ tp.tipo }}: {{ tp.ocupados }}/{{ tp.cupos }}</li>
                     {% empty %}
                       <li>No hay tipos de productos definidos</li>
                     {% endfor %}
                   </ul>
-                  <span id="countdown-{{ feria.id }}">Cargando...</span>
                   <!-- Botón favorito -->
                   <form method="post" style="margin-top:12px;">
                     {% csrf_token %}
